@@ -8,6 +8,7 @@ Using 'miniforge' instead of 'miniconda' because it's more less likely to break
 
 Author:     jmdm
 Date:       2022-12-30
+
 readme
 
 # if script is run exit
@@ -23,10 +24,3 @@ conda activate thesis
 conda env config vars set CONDA_SUBDIR=osx-64
 conda deactivate
 conda activate thesis
-
-# == Revolve 2 === #
-pip install -e revolve2/core/
-pip install -e revolve2/runners/mujoco/
-brew install cereal
-export CPATH=/opt/homebrew/include
-pip install -e revolve2/genotypes/cppnwin/
