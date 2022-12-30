@@ -2,14 +2,6 @@
 
 Files I use as templates or re-use in multiple projects or directories
 
-## Python
-
-Contains python helper files
-
-## Shell
-
-Contains shell helper files
-
 ## Directory Structure
 
 ```
@@ -24,3 +16,16 @@ Contains shell helper files
     ├── README.md
     └── env.sh
 ```
+
+## README.md
+
+This file.
+
+## Python
+
+Contains python helper files.
+
+## Shell
+
+Contains shell helper files.
+

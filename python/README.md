@@ -1,17 +1,13 @@
 # Python
-
-## README.md
-
-This file.
-
 ## base.py
 
-A python file used as template for all other python programs written by JMDM.
+A python file used as template for all other python programs written by the author.
+
 It also contains information at the bottom (for easy recollection) regarding how to save a python requirement.txt file as well as preferred syntax style.
 
 ## data.py
 
-Contains common "dataclasses" used by JMDM in his python programs (mostly aesthetic).
+Contains common "dataclasses" used by the author in his python programs (mostly aesthetic).
 
 ## setup.py
 
