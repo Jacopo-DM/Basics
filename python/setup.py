@@ -16,7 +16,18 @@ import os
 import sys
 
 # Local libraries
-from data import ShellColours as Clr
+# Local libraries
+try:
+    from data import ShellColours as Clr
+except ImportError as e:
+    ylw = "\033[33m"
+    end = "\033[0m"
+    print(f"{ylw}ImportError: data module not found")
+    print(f"You probably need to update the import line to match your file structure")
+    print(f"eg. from utils.data import ShellColours as Clr")
+    print(f"Exiting...{end}\n")
+    raise e
+
 
 # Global constants
 LOGGING_LEVEL = logging.INFO
