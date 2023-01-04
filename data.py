@@ -2,7 +2,7 @@
 
 """
 Author:     jmdm
-Date:       YYYY-MM-DD
+Date:       2022-12-30
 OS:         macOS 12.6 (Monterey)
 Hardware:   M1 chip
 
