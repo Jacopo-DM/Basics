@@ -6,7 +6,7 @@ Files I use as templates or re-use in multiple projects or directories
 ```
 .
 ├── README.md           # This file
-├── python              # Python helper files
+├── python              # Python helper 
 │   ├── README.md
 │   ├── base.py
 │   ├── data.py
