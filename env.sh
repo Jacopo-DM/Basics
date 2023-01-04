@@ -7,7 +7,7 @@ Using 'miniforge' instead of 'miniconda' because it's more less likely to break
 (https://github.com/conda-forge/miniforge#miniforge)
 
 Author:     jmdm
-Date:       2022-12-30
+Date:       2022-12-
 
 readme
 
