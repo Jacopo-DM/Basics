@@ -5,26 +5,13 @@ Files I use as templates or re-use in multiple projects or directories
 
 ```
 .
-├── README.md
-├── python
+├── README.md           # This file
+├── python              # Python helper files
 │   ├── README.md
 │   ├── base.py
 │   ├── data.py
 │   └── setup.py
-└── shell
+└── shell               # Shell helper files
     ├── README.md
-    └── env.sh
+    └── env.sh          # Conda environment setup guide
 ```
-
-## README.md
-
-This file.
-
-## Python
-
-Contains python helper files.
-
-## Shell
-
-Contains shell helper files.
-
