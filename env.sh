@@ -19,8 +19,15 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 
 # == Set Up The Conda Environment == #
-CONDA_SUBDIR=osx-64 conda create -n thesis python=3.10
-conda activate thesis
+CONDA_SUBDIR=osx-64 conda create -n ENV_NAME python=3.10
+conda activate ENV_NAME
 conda env config vars set CONDA_SUBDIR=osx-64
 conda deactivate
-conda activate thesis
+conda activate ENV_NAME
+
+
+# == Utils Setup == #
+
+# Remove git files
+rm -rf .git
+rm .gitignore

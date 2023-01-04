@@ -2,7 +2,7 @@
 
 """
 Author:     jmdm
-Date:       2022-12-30
+Date:       YYYY-MM-DD
 OS:         macOS 12.6 (Monterey)
 Hardware:   M1 chip
 
@@ -15,7 +15,12 @@ from dataclasses import dataclass
 
 @dataclass
 class Palette:
-    """Color palette for plots"""
+    """Color palette for plots
+    
+    See: 
+        - Palette 1: https://coolors.co/3a86ff-ff006e-ff9f1c-8338ec-8fa739
+        - Palette 2: https://coolors.co/f0cf65-00b84d-51d6ff-ff5a5f-394053
+    """
 
     # Basics
     BLACK: str = "#000000"
@@ -24,14 +29,14 @@ class Palette:
     GREEN: str = "#00FF00"
     BLUE: str = "#0000FF"
 
-    # https://coolors.co/3a86ff-ff006e-ff9f1c-8338ec-8fa739
+    # Palette 1
     BLUE: str = "#3A86FF"
     PINK: str = "#FF006E"
     ORANGE: str = "#FF9F1C"
     PURPLE: str = "#8338EC"
     GREEN: str = "#8FA739"
 
-    # https://coolors.co/f0cf65-00b84d-51d6ff-ff5a5f-394053
+    # Palette 2
     YELLOW: str = "#CCA114"
     RED: str = "#D80032"
     GRAY: str = "#394053"
