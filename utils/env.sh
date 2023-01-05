@@ -19,11 +19,11 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 
 # == Set Up The Conda Environment == #
-CONDA_SUBDIR=osx-64 conda create -n ENV_NAME python=3.10
-conda activate ENV_NAME
+CONDA_SUBDIR=osx-64 conda create -n thesis python=3.10
+conda activate thesis
 conda env config vars set CONDA_SUBDIR=osx-64
 conda deactivate
-conda activate ENV_NAME
+conda activate thesis
 
 
 # == Utils Setup == #
