@@ -15,7 +15,12 @@ from dataclasses import dataclass
 
 @dataclass
 class Palette:
-    """Color palette for plots"""
+    """Color palette for plots
+
+    See:
+        - Palette 1: https://coolors.co/3a86ff-ff006e-ff9f1c-8338ec-8fa739
+        - Palette 2: https://coolors.co/f0cf65-00b84d-51d6ff-ff5a5f-394053
+    """
 
     # Basics
     BLACK: str = "#000000"
@@ -24,14 +29,14 @@ class Palette:
     G: str = "#00FF00"
     B: str = "#0000FF"
 
-    # https://coolors.co/3a86ff-ff006e-ff9f1c-8338ec-8fa739
+    # Palette 1
     BLUE: str = "#3A86FF"
     PINK: str = "#FF006E"
     ORANGE: str = "#FF9F1C"
     PURPLE: str = "#8338EC"
     GREEN: str = "#8FA739"
 
-    # https://coolors.co/f0cf65-00b84d-51d6ff-ff5a5f-394053
+    # Palette 2
     YELLOW: str = "#CCA114"
     RED: str = "#D80032"
     GRAY: str = "#394053"
@@ -43,7 +48,7 @@ class Palette:
 class ShellColours:
     """Color palette for printing in the terminal.
 
-    See: 
+    See:
         - https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
         - https://stackoverflow.com/questions/287871/how-to-print-colored-text-to-the-terminal
     """
