@@ -16,17 +16,23 @@ import os
 import sys
 
 # Local libraries
-# Local libraries
 try:
+    # If running from the root directory
     from data import ShellColours as Clr
 except ImportError as e:
-    ylw = "\033[33m"
-    end = "\033[0m"
-    print(f"{ylw}ImportError: data module not found")
-    print(f"You probably need to update the import line to match your file structure")
-    print(f"eg. from utils.data import ShellColours as Clr")
-    print(f"Exiting...{end}\n")
-    raise e
+    try:
+        # If running from the utils directory
+        from .data import ShellColours as Clr
+    except ImportError as e:
+        ylw = "\033[33m"
+        end = "\033[0m"
+        print(f"{ylw}ImportError: data module not found")
+        print(
+            f"You probably need to update the import line to match your file structure"
+        )
+        print(f"eg. from utils.data import ShellColours as Clr")
+        print(f"Exiting...{end}\n")
+        raise e
 
 
 # Global constants
@@ -66,12 +72,10 @@ def check_os() -> None:
     os_name = os_match.get(system, "Unknown")
     if os_name != "Unknown":
         if os_name != "MacOS":
-            logging.warning(
-                f"Code was developed on {Clr.yellow}MacOS{Clr.end}")
+            logging.warning(f"Code was developed on {Clr.yellow}MacOS{Clr.end}")
         logging.info(f"Operating system is {Clr.green}{os_name}{Clr.end}")
     else:
-        logging.error(
-            f"System {Clr.red}{sys.platform}{Clr.end} is not supported!")
+        logging.error(f"System {Clr.red}{sys.platform}{Clr.end} is not supported!")
         logging.error("Exiting...\n")
         raise NotImplementedError
 
@@ -127,9 +131,7 @@ def check_requirements() -> None:
             # remove version numbers
             requirements = [r.split("==")[0] for r in requirements]
             # warn version numbers are ignored
-            logging.debug(
-                f"{Clr.yellow}Version numbers are ignored{Clr.end}"
-            )
+            logging.debug(f"{Clr.yellow}Version numbers are ignored{Clr.end}")
         try:
             # check if all packages are installed
             for r in requirements:
