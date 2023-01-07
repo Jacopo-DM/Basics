@@ -26,8 +26,6 @@ conda deactivate
 conda activate thesis
 
 
-# == Utils Setup == #
-
-# Remove git files
+# == Remove git files == #
 rm -rf .git
 rm .gitignore
