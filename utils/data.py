@@ -25,9 +25,9 @@ class Palette:
     # Basics
     BLACK: str = "#000000"
     WHITE: str = "#FFFFFF"
-    RED: str = "#FF0000"
-    GREEN: str = "#00FF00"
-    BLUE: str = "#0000FF"
+    R: str = "#FF0000"
+    G: str = "#00FF00"
+    B: str = "#0000FF"
 
     # Palette 1
     BLUE: str = "#3A86FF"
