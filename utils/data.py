@@ -16,10 +16,12 @@ from dataclasses import dataclass
 @dataclass
 class Palette:
     """Color palette for plots
-    
-    See: 
-        - Palette 1: https://coolors.co/3a86ff-ff006e-ff9f1c-8338ec-8fa739
-        - Palette 2: https://coolors.co/f0cf65-00b84d-51d6ff-ff5a5f-394053
+
+    See:
+        - Palette 1: https://coolors.co/3a86ff-ff006e-ff9f1c-8338ec-00b84d
+        - Palette 1 Darker: https://coolors.co/0046b8-b80050-cc7700-5811bb-008f3c
+        - Palette 1 Light: https://coolors.co/70a7ff-ff70ae-ffc370-b98ff5-5cffa0
+        - Palette 2: https://coolors.co/f0cf65-8980f5-51d6ff-ff5a5f-394053
     """
 
     # Basics
@@ -34,21 +36,35 @@ class Palette:
     PINK: str = "#FF006E"
     ORANGE: str = "#FF9F1C"
     PURPLE: str = "#8338EC"
-    GREEN: str = "#8FA739"
+    GREEN: str = "#00B84D"
+
+    # Palette 1 Darker
+    DARK_BLUE: str = "#0046B8"
+    DARK_PINK: str = "#B80050"
+    DARK_ORANGE: str = "#CC7700"
+    DARK_PURPLE: str = "#5811BB"
+    DARK_GREEN: str = "#008F3C"
+
+    # Palette 1 (light)
+    LIGHT_BLUE: str = "#70A7FF"
+    LIGHT_PINK: str = "#FF70AE"
+    LIGHT_ORANGE: str = "#FFC370"
+    LIGHT_PURPLE: str = "#B98FF5"
+    LIGHT_GREEN: str = "#5CFFA0"
 
     # Palette 2
-    YELLOW: str = "#CCA114"
-    RED: str = "#D80032"
+    YELLOW: str = "#F0CF65"
+    LILAC: str = "#8980F5"
+    CYAN: str = "#51D6FF"
+    RED: str = "#FF5A5F"
     GRAY: str = "#394053"
-    GREEN2: str = "#00B84D"
-    BLUE2: str = "#00BCF5"
 
 
 @dataclass
 class ShellColours:
     """Color palette for printing in the terminal.
 
-    See: 
+    See:
         - https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
         - https://stackoverflow.com/questions/287871/how-to-print-colored-text-to-the-terminal
     """
