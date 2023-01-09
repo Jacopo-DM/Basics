@@ -28,9 +28,17 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.future import select
 
 # Local libraries
-from .genotype import Genotype, GenotypeSerializer  # type: ignore # FIXME
-from .item import Item  # type: ignore # FIXME
-from .phenotype import Phenotype  # type: ignore # FIXME
+try:
+    from .genotype import Genotype, GenotypeSerializer
+    from .item import Item
+    from .phenotype import Phenotype
+except ImportError:
+    from genotype import (  # type: ignore # FIXME stubs and multiple imports
+        Genotype,
+        GenotypeSerializer,
+    )
+    from item import Item  # type: ignore # FIXME stubs and multiple imports
+    from phenotype import Phenotype  # type: ignore # FIXME stubs and multiple imports
 
 # Global variables
 FITNESS_TYPE = float

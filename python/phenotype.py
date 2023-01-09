@@ -15,8 +15,12 @@ from random import Random
 from typing import List
 
 # Local libraries
-from .genotype import Genotype  # type: ignore # FIXME
-from .item import Item  # type: ignore # FIXME
+try:
+    from .genotype import Genotype
+    from .item import Item
+except ImportError:
+    from genotype import Genotype  # type: ignore # FIXME stubs and multiple imports
+    from item import Item  # type: ignore # FIXME stubs and multiple imports
 
 
 @dataclass

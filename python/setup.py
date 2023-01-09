@@ -17,20 +17,9 @@ import sys
 
 # Local libraries
 try:
-    # If running from the root directory
-    from data import ShellColours as Clr  # type: ignore # FIXME
-except ImportError as e:
-    try:
-        # If running from the utils directory
-        from .data import ShellColours as Clr
-    except ImportError as e:
-        print(f"\033[33mImportError: data module not found")
-        print(
-            f"You probably need to update the import line to match your file structure"
-        )
-        print(f"eg. from utils.data import ShellColours as Clr")
-        print(f"Exiting...\033[0m\n")
-        raise e
+    from .data import ShellColours as Clr
+except ImportError:
+    from data import ShellColours as Clr  # type: ignore # FIXME stubs and multipl
 
 
 # Global constants

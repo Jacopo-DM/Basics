@@ -97,9 +97,6 @@ async def main() -> None:
 
 if __name__ == "__main__":
     import asyncio
-    import os
-
-    os.system("clear")
 
     setup()
     asyncio.run(main())

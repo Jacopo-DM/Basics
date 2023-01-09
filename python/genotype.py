@@ -22,9 +22,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.future import select
 
 # Local libraries
-from .item import Item  # type: ignore # FIXME
+try:
+    from .item import Item
+except ImportError:
+    from item import Item  # type: ignore # FIXME stubs and multiple imports
 
 DbBase = declarative_base()
+
+import os
+
+os.environ["SQLALCHEMY_SILENCE_UBER_WARNING"] = "1"  # FIXME depricated API
 
 
 @dataclass

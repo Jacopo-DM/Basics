@@ -19,8 +19,8 @@ See program help for what inputs to provide.
 import argparse
 
 # Third-party libraries
-import fire  # type: ignore # FIXME missing stubs
-import matplotlib.pyplot as plt  # type: ignore # FIXME missing stubs
+import fire  # type: ignore # FIXME cannot find stubs
+import matplotlib.pyplot as plt  # type: ignore # FIXME cannot find stubs
 import pandas
 from revolve2.core.database import open_database_sqlite
 from revolve2.core.database.serializers import DbFloat
