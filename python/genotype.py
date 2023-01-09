@@ -2,43 +2,40 @@
 
 """
 Author:     jmdm
-Date:       2023-01-04
+Date:       YYYY-MM-DD
 OS:         macOS 12.6 (Monterey)
 Hardware:   M1 chip
 
 This code is provided "As Is"
 """
 
+
 # Standard libraries
 from dataclasses import dataclass
-from random import Random
 from typing import List
 
-# Third-party libraries
+# Revolve2
 from revolve2.core.database import IncompatibleError, Serializer
+from revolve2.genotypes.cppnwin import Genotype as CppnwinGenotype
+from revolve2.genotypes.cppnwin import GenotypeSerializer as CppnwinGenotypeSerializer
+
+# SQLAlchemy
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.future import select
 
-# Local libraries
-try:
-    from .item import Item
-except ImportError:
-    from item import Item  # type: ignore # FIXME stubs and multiple imports
-
+# import os
+# os.environ["SQLALCHEMY_SILENCE_UBER_WARNING"] = "1"  # FIXME depricated API
 DbBase = declarative_base()
-
-import os
-
-os.environ["SQLALCHEMY_SILENCE_UBER_WARNING"] = "1"  # FIXME depricated API
 
 
 @dataclass
 class Genotype:
     """Genotype for the knapsack problem."""
 
-    items: List[bool]
+    body: CppnwinGenotype
+    brain: CppnwinGenotype
 
 
 class DbGenotype(DbBase):
@@ -53,7 +50,16 @@ class DbGenotype(DbBase):
         autoincrement=True,
         primary_key=True,
     )
-    items = Column(String, nullable=False)
+
+    body_id = Column(
+        Integer,
+        nullable=False,
+    )
+
+    brain_id = Column(
+        Integer,
+        nullable=False,
+    )
 
 
 class GenotypeSerializer(Serializer[Genotype]):
@@ -61,6 +67,8 @@ class GenotypeSerializer(Serializer[Genotype]):
     async def create_tables(cls, session: AsyncSession) -> None:
         """Create the tables for the genotype."""
         await (await session.connection()).run_sync(DbGenotype.metadata.create_all)
+        # await (await session.connection()).run_sync(DbBase.metadata.create_all)  # FIXME what's the difference?
+        await CppnwinGenotypeSerializer.create_tables(session)
 
     @classmethod
     def identifying_table(cls) -> str:
@@ -73,10 +81,23 @@ class GenotypeSerializer(Serializer[Genotype]):
     ) -> List[int]:
         """Save the objects to the database."""
 
+        # Save the bodies to the database
+        body_ids = await CppnwinGenotypeSerializer.to_database(
+            session, [genotype.body for genotype in objects]
+        )
+
+        # Save the brains to the database
+        brain_ids = await CppnwinGenotypeSerializer.to_database(
+            session, [genotype.brain for genotype in objects]
+        )
+
         # Create the database objects
         db_objects = [
-            DbGenotype(items="".join(["1" if gene else "0" for gene in genotype.items]))
-            for genotype in objects
+            DbGenotype(
+                body_id=body_id,
+                brain_id=brain_id,
+            )
+            for body_id, brain_id in zip(body_ids, brain_ids)
         ]
 
         # Save the objects to the database
@@ -114,36 +135,24 @@ class GenotypeSerializer(Serializer[Genotype]):
 
         # Create the objects
         id_map = {row.id: row for row in rows}
-        items_strs = [id_map[id].items for id in ids]
-        items_bool = [[bool(int(gene)) for gene in item_str] for item_str in items_strs]
-        objects = [Genotype(items=item) for item in items_bool]
+
+        # Get ID's
+        body_ids = [id_map[id].body_id for id in ids]
+        brain_ids = [id_map[id].brain_id for id in ids]
+
+        # Get genotypes
+        body_genotypes = await CppnwinGenotypeSerializer.from_database(
+            session, body_ids
+        )
+        brain_genotypes = await CppnwinGenotypeSerializer.from_database(
+            session, brain_ids
+        )
+
+        # Form objects
+        objects = [
+            Genotype(body=body, brain=brain)
+            for body, brain in zip(body_genotypes, brain_genotypes)
+        ]
 
         # Return the objects
         return objects
-
-
-def random_genotype(rng: Random, probability: float, num_of_items: int) -> Genotype:
-    """Generate a random genotype, by generating a random string of booleans."""
-    return Genotype(
-        rng.choices(
-            [True, False], weights=[probability, 1 - probability], k=num_of_items
-        )
-    )
-
-
-def _test() -> None:
-    """Test the module."""
-
-    # Test the Genotype class
-    genotype = Genotype([True, True, True, True, True])
-    print(f"genotype: {genotype}")
-
-    # Test the random_genotype function
-    items = [Item(1, 1), Item(2, 2), Item(3, 3), Item(4, 4), Item(5, 5)]
-    genotype = random_genotype(rng=Random(), probability=0.5, num_of_items=len(items))
-    print(f"items: {items}")
-    print(f"genotype: {genotype}")
-
-
-if __name__ == "__main__":
-    _test()

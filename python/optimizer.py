@@ -2,7 +2,7 @@
 
 """
 Author:     jmdm
-Date:       2023-01-04
+Date:       YYYY-MM-DD
 OS:         macOS 12.6 (Monterey)
 Hardware:   M1 chip
 
@@ -11,17 +11,35 @@ This code is provided "As Is"
 
 
 # Standard libraries
+import math
 import pickle
 from random import Random
 from typing import List, Tuple
 
+# MultiNEAT
+import multineat  # type: ignore # STUB
+
 # Third-party libraries
-import revolve2.core.optimization.ea.generic_ea.population_management as population_management
+from pyrr import Quaternion, Vector3  # type: ignore # STUB
+
+# Revolve2
+from revolve2.actor_controller import ActorController
 from revolve2.core.database import IncompatibleError
 from revolve2.core.database.serializers._float_serializer import FloatSerializer
 from revolve2.core.optimization import DbId
 from revolve2.core.optimization.ea.generic_ea import EAOptimizer
-from sqlalchemy import Column, Integer, PickleType, String
+from revolve2.core.physics.running import (
+    ActorControl,
+    ActorState,
+    Batch,
+    Environment,
+    PosedActor,
+    Runner,
+)
+from revolve2.runners.mujoco import LocalRunner
+
+# SQLAlchemy
+from sqlalchemy import Column, Float, Integer, PickleType, String
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
@@ -29,21 +47,31 @@ from sqlalchemy.future import select
 
 # Local libraries
 try:
-    from .genotype import Genotype, GenotypeSerializer
-    from .item import Item
-    from .phenotype import Phenotype
-except ImportError:
-    from genotype import (  # type: ignore # FIXME stubs and multiple imports
-        Genotype,
-        GenotypeSerializer,
+    from .genotype import Genotype  # type: ignore # STUB and multiple imports
+    from .genotype import GenotypeSerializer  # type: ignore # STUB and multiple imports
+    from .helpers import (  # type: ignore # STUB and multiple imports
+        EnvironmentActorController,
+        crossover,
+        develop,
+        mutate,
+        select_parents_tournament,
+        select_survivors_tournament,
     )
-    from item import Item  # type: ignore # FIXME stubs and multiple imports
-    from phenotype import Phenotype  # type: ignore # FIXME stubs and multiple imports
+except ImportError:
+    from genotype import Genotype  # type: ignore # STUB and multiple imports
+    from genotype import GenotypeSerializer  # type: ignore # STUB and multiple imports
+    from helpers import (  # type: ignore # STUB and multiple imports
+        EnvironmentActorController,
+        crossover,
+        develop,
+        mutate,
+        select_parents_tournament,
+        select_survivors_tournament,
+    )
 
 # Global variables
 FITNESS_TYPE = float
 FITNESS_SERIAL = FloatSerializer
-MUTATION_RATE = 0.05
 DbBase = declarative_base()
 
 
@@ -59,6 +87,14 @@ class DbOptimizerState(DbBase):
     )
     generation_index = Column(Integer, nullable=False, primary_key=True)
     rng = Column(PickleType, nullable=False)
+    num_generations = Column(Integer, nullable=False)
+
+    # CPPN
+    innov_db_body = Column(String, nullable=False)
+    innov_db_brain = Column(String, nullable=False)
+    simulation_time = Column(Integer, nullable=False)
+    sampling_frequency = Column(Float, nullable=False)
+    control_frequency = Column(Float, nullable=False)
 
 
 class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
@@ -66,11 +102,19 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
 
     _db_id: DbId
     _rng: Random
-    _items: List[Item]
-    _max_weight: float
     _num_generations: int
 
-    async def ainit_new(  # type: ignore # FIXME
+    # CPPN
+    _runner: Runner
+    _controllers: List[ActorController]
+
+    _innov_db_body: multineat.InnovationDatabase  # type: ignore # STUB
+    _innov_db_brain: multineat.InnovationDatabase  # type: ignore # STUB
+    _simulation_time: int
+    _sampling_frequency: float
+    _control_frequency: float
+
+    async def ainit_new(  # type: ignore # STUB
         self,
         database: AsyncEngine,
         session: AsyncSession,
@@ -78,9 +122,12 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
         offspring_size: int,
         initial_population: List[Genotype],
         rng: Random,
-        items: List[Item],
-        max_weight: float,
         num_generations: int,
+        innov_db_body: multineat.InnovationDatabase,  # type: ignore # STUB
+        innov_db_brain: multineat.InnovationDatabase,  # type: ignore # STUB
+        simulation_time: int,
+        sampling_frequency: float,
+        control_frequency: float,
     ) -> None:
         """Initialize the optimizer."""
 
@@ -98,8 +145,14 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
 
         self._db_id = db_id
         self._rng = rng
-        self._items = items
-        self._max_weight = max_weight
+        self._num_generations = num_generations
+
+        # CPPN
+        self._innov_db_body = innov_db_body
+        self._innov_db_brain = innov_db_brain
+        self._simulation_time = simulation_time
+        self._sampling_frequency = sampling_frequency
+        self._control_frequency = control_frequency
         self._num_generations = num_generations
 
         # create database structure if it doesn't exist
@@ -115,19 +168,27 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
             db_id=self._db_id.fullname,
             generation_index=self.generation_index,  # type: ignore # FIXME expected int got optional
             rng=pickle.dumps(self._rng.getstate()),
+            innov_db_body=self._innov_db_body.Serialize(),
+            innov_db_brain=self._innov_db_brain.Serialize(),
+            simulation_time=self._simulation_time,
+            sampling_frequency=self._sampling_frequency,
+            control_frequency=self._control_frequency,
+            num_generations=self._num_generations,
         )
 
         session.add(opt_state)
 
-    async def ainit_from_database(  # type: ignore # FIXME
+    def _init_runner(self) -> None:
+        self._runner = LocalRunner(headless=True)
+
+    async def ainit_from_database(  # type: ignore # STUB
         self,
         database: AsyncEngine,
         session: AsyncSession,
         db_id: DbId,
         rng: Random,
-        items: List[Item],
-        max_weight: float,
-        num_generations: int,
+        innov_db_body: multineat.InnovationDatabase,  # type: ignore # STUB
+        innov_db_brain: multineat.InnovationDatabase,  # type: ignore # STUB
     ) -> bool:
         """Initialize the optimizer from the database."""
 
@@ -146,10 +207,7 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
 
         # save parameters
         self._db_id = db_id
-        self._rng = rng
-        self._items = items
-        self._max_weight = max_weight
-        self._num_generations = num_generations
+        self._init_runner()
 
         # retrive row from database
         opt_row = (
@@ -173,34 +231,25 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
         self._rng = rng
         self._rng.setstate(pickle.loads(opt_row.rng))
 
+        # CPPN
+        self._simulation_time = opt_row.simulation_time
+        self._sampling_frequency = opt_row.sampling_frequency
+        self._control_frequency = opt_row.control_frequency
+        self._num_generations = opt_row.num_generations
+
+        self._innov_db_body = innov_db_body
+        self._innov_db_body.Deserialize(opt_row.innov_db_body)
+        self._innov_db_brain = innov_db_brain
+        self._innov_db_brain.Deserialize(opt_row.innov_db_brain)
+
         # success
         return True
-
-    async def _evaluate_generation(
-        self, genotypes: List[Genotype], database: AsyncEngine, db_id: DbId
-    ) -> List[FITNESS_TYPE]:
-        """Evaluate the fitness of the given genotypes."""
-
-        # Get the phenotypes for the genotypes
-        phenotypes = [
-            Phenotype(
-                genotype=genotype,
-                items=self._items,
-                max_weight=self._max_weight,
-                rng=self._rng,
-            )
-            for genotype in genotypes
-        ]
-
-        # Evaluate the phenotypes
-        fitnesses = [float(phenotype.get_total_value()) for phenotype in phenotypes]
-        return fitnesses
 
     def _must_do_next_gen(self) -> bool:
         """Check if the next generation must be done."""
         return (
             self.generation_index != self._num_generations
-        )  # hoping equality is not a problem, ideally should be <
+        )  # HACK hoping equality is not a problem, ideally should be <
 
     def _select_parents(
         self,
@@ -219,34 +268,6 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
             tournament_size=10,
         )
 
-    def _crossover(self, parents: List[Genotype]) -> Genotype:
-        """Perform uniform crossover on the given parents."""
-
-        # check number of parents
-        assert len(parents) == 2
-
-        # get parents
-        p1 = parents[0]
-        p2 = parents[1]
-
-        # create a new genotype (uniform crossover)
-        return Genotype(
-            [self._rng.choice([p1.items[i], p2.items[i]]) for i in range(len(p1.items))]
-        )
-
-    def _mutate(self, genotype: Genotype) -> Genotype:
-        """Mutate the given genotype."""
-
-        # Randomly inverse the value of a gene
-        return Genotype(
-            [
-                self._rng.choice([item, not item])
-                if self._rng.random() < MUTATION_RATE
-                else item
-                for item in genotype.items
-            ]
-        )
-
     def _select_survivors(
         self,
         old_individuals: List[Genotype],
@@ -256,7 +277,6 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
         num_survivors: int,
     ) -> Tuple[List[int], List[int]]:
         """Select survivors for the next generation."""
-
         # check number of survivors
         assert len(old_individuals) == num_survivors
 
@@ -269,96 +289,76 @@ class Optimizer(EAOptimizer[Genotype, FITNESS_TYPE]):
             tournament_size=10,
         )
 
+    def _crossover(self, parents: List[Genotype]) -> Genotype:
+        """Perform uniform crossover on the given parents."""
+        assert len(parents) == 2
+        return crossover(parents[0], parents[1], self._rng)  # type: ignore # FIXME mypy doesn't like this?
 
-def select_survivors_tournament(
-    rng: Random,
-    old_fitnesses: List[FITNESS_TYPE],
-    new_fitnesses: List[FITNESS_TYPE],
-    num_survivors: int,
-    tournament_size: int,
-) -> Tuple[List[int], List[int]]:
-    """Select survivors for the next generation.
+    def _mutate(self, genotype: Genotype) -> Genotype:
+        """Mutate the given genotype."""
+        return mutate(genotype, self._innov_db_body, self._innov_db_brain, self._rng)  # type: ignore # FIXME mypy doesn't like this?
 
-    Parameters
-    ----------
-    rng : Random
-        Random number generator.
-    old_fitnesses : List[FITNESS_TYPE]
-        The fitnesses of the old individuals.
-    new_fitnesses : List[FITNESS_TYPE]
-        The fitnesses of the new individuals.
-    num_survivors : int
-        The number of survivors.
-    tournament_size : int
-        The size of the tournament.
+    async def _evaluate_generation(
+        self, genotypes: List[Genotype], database: AsyncEngine, db_id: DbId
+    ) -> List[FITNESS_TYPE]:
+        """Evaluate the fitness of the given genotypes."""
 
-    Returns
-    -------
-    Tuple[List[int], List[int]]
-        The indices of the old and new individuals that are selected as survivors.
-    """
+        batch = Batch(
+            simulation_time=self._simulation_time,
+            sampling_frequency=self._sampling_frequency,
+            control_frequency=self._control_frequency,
+        )
 
-    # Merge fitnesses
-    fitnesses = old_fitnesses + new_fitnesses
+        self._controllers = []
 
-    # Sort the fitnesses
-    fit_sorted = sorted(enumerate(fitnesses), key=lambda x: x[1], reverse=True)
-    fit_generator = [i for i in range(len(fit_sorted))]
+        for genotype in genotypes:
+            # Initialize the robot
+            actor, controller = develop(genotype).make_actor_and_controller()
+            bounding_box = actor.calc_aabb()
+            self._controllers.append(controller)
 
-    # Select survivors
-    survivors = []
-    for __ in range(num_survivors):
-        idx = min(rng.choices(fit_generator, k=tournament_size))
-        survivors.extend([fit_sorted[idx][0]])
-        fit_generator.remove(idx)
+            # Initialize the environment
+            env = Environment(EnvironmentActorController(controller))
+            env.actors.append(
+                PosedActor(
+                    actor=actor,
+                    position=Vector3(
+                        [
+                            0.0,
+                            0.0,
+                            bounding_box.size.z / 2.0 - bounding_box.offset.z,
+                        ]
+                    ),
+                    orientation=Quaternion(),
+                    dof_states=[0.0 for _ in controller.get_dof_targets()],
+                )
+            )
+            batch.environments.append(env)
+        batch_results = await self._runner.run_batch(batch)
 
-    # Retrive matching indices
-    len_old = len(old_fitnesses)
-    old_indices = [i for i in survivors if i < len_old]
-    new_indices = [i - len_old for i in survivors if i >= len_old]
+        return [
+            self._calculate_fitness(
+                env_res.environment_states[0].actor_states[0],
+                env_res.environment_states[-1].actor_states[0],
+            )
+            for env_res in batch_results.environment_results
+        ]
 
-    # Return the parents
-    return (old_indices, new_indices)
+    def _control(
+        self, environment_index: int, dt: float, control: ActorControl
+    ) -> None:
+        """Control the robot."""
 
+        controller = self._controllers[environment_index]
+        controller.step(dt)
+        control.set_dof_targets(actor=0, targets=controller.get_dof_targets())
 
-def select_parents_tournament(
-    rng: Random,
-    fitnesses: List[FITNESS_TYPE],
-    num_parent_groups: int,
-    num_of_parents: int,
-    tournament_size: int,
-) -> List[List[int]]:
-    """Select parents for the next generation.
-
-    Parameters
-    ----------
-    rng : Random
-        Random number generator.
-    fitnesses : List[FITNESS_TYPE]
-        The fitnesses of the population.
-    num_parent_groups : int
-        The number of parent groups to select.
-    num_of_parents : int
-        The number of parents in each group.
-    tournament_size : int
-        The size of the tournament.
-
-    Returns
-    -------
-    List[List[int]]
-        The indices of the selected parents.
-    """
-
-    # Sort the fitnesses
-    fit_sorted = sorted(enumerate(fitnesses), key=lambda x: x[1], reverse=True)
-    fit_generator = range(len(fit_sorted))
-
-    # Select parents
-    parents = []
-    for __ in range(num_parent_groups):
-        idx = sorted(rng.sample(fit_generator, tournament_size))
-        _parents = [fit_sorted[i][0] for i in idx[:num_of_parents]]
-        parents.append(_parents)
-
-    # Return the parents
-    return parents
+    @staticmethod
+    def _calculate_fitness(begin_state: ActorState, end_state: ActorState) -> float:
+        """Calculate the fitness of the robot."""
+        return float(
+            math.sqrt(
+                (end_state.position.x - begin_state.position.x) ** 2
+                + (end_state.position.y - begin_state.position.y) ** 2
+            )
+        )

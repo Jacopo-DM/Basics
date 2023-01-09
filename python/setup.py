@@ -19,7 +19,7 @@ import sys
 try:
     from .data import ShellColours as Clr
 except ImportError:
-    from data import ShellColours as Clr  # type: ignore # FIXME stubs and multipl
+    from data import ShellColours as Clr  # type: ignore # STUB and multiple imports
 
 
 # Global constants

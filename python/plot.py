@@ -2,7 +2,7 @@
 
 """
 Author:     jmdm
-Date:       YYYY-MM-DD
+Date:       2023-01-09
 OS:         macOS 12.6 (Monterey)
 Hardware:   M1 chip
 
@@ -15,13 +15,12 @@ See program help for what inputs to provide.
 
 """
 
-# Standard libraries
-import argparse
-
 # Third-party libraries
-import fire  # type: ignore # FIXME cannot find stubs
-import matplotlib.pyplot as plt  # type: ignore # FIXME cannot find stubs
+import fire  # type: ignore # STUB
+import matplotlib.pyplot as plt  # type: ignore # STUB
 import pandas
+
+# Revolve2
 from revolve2.core.database import open_database_sqlite
 from revolve2.core.database.serializers import DbFloat
 from revolve2.core.optimization import DbId
@@ -30,7 +29,8 @@ from revolve2.core.optimization.ea.generic_ea import (
     DbEAOptimizerGeneration,
     DbEAOptimizerIndividual,
 )
-from revolve2.core.optimization.ea.openai_es import DbOpenaiESOptimizerIndividual
+
+# SQLAlchemy
 from sqlalchemy.future import select
 
 # Local libraries
@@ -97,29 +97,29 @@ def plot(database: str, _db_id: str) -> None:
     describe[["max", "mean", "min"]].plot(
         color=[Palette.GREEN, Palette.PINK, Palette.ORANGE],
     )
-    # Horizontal line at avg of best and add text with value and std
-    plt.axhline(
-        describe["max"].mean(),
-        color=Palette.DARK_GREEN,
-        linestyle="--",
-        label=f"avg max: {describe['max'].mean():.2f} ± {describe['max'].std():.2f}",
-    )
+    # # Horizontal line at avg of best and add text with value and std
+    # plt.axhline(
+    #     describe["max"].mean(),
+    #     color=Palette.DARK_GREEN,
+    #     linestyle="--",
+    #     label=f"avg max: {describe['max'].mean():.2f} ± {describe['max'].std():.2f}",
+    # )
 
-    # Horizontal line at avg of avg
-    plt.axhline(
-        describe["mean"].mean(),
-        color=Palette.DARK_PINK,
-        linestyle="--",
-        label=f"avg mean: {describe['mean'].mean():.2f} ± {describe['mean'].std():.2f}",
-    )
+    # # Horizontal line at avg of avg
+    # plt.axhline(
+    #     describe["mean"].mean(),
+    #     color=Palette.DARK_PINK,
+    #     linestyle="--",
+    #     label=f"avg mean: {describe['mean'].mean():.2f} ± {describe['mean'].std():.2f}",
+    # )
 
-    # Horizontal line at avg of worst
-    plt.axhline(
-        describe["min"].mean(),
-        color=Palette.DARK_ORANGE,
-        linestyle="--",
-        label=f"avg min: {describe['min'].mean():.2f} ± {describe['min'].std():.2f}",
-    )
+    # # Horizontal line at avg of worst
+    # plt.axhline(
+    #     describe["min"].mean(),
+    #     color=Palette.DARK_ORANGE,
+    #     linestyle="--",
+    #     label=f"avg min: {describe['min'].mean():.2f} ± {describe['min'].std():.2f}",
+    # )
 
     plt.title(f"Fitness Over Generations for '{db_id.fullname}'")
 
@@ -134,7 +134,7 @@ def plot(database: str, _db_id: str) -> None:
         mean - std,
         mean + std,
         alpha=0.3,
-        color=Palette.BLUE,
+        color=Palette.PINK,
     )
 
     # Save the plot

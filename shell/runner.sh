@@ -27,6 +27,7 @@ function run_python {
     echo ""
 }
 
+
 # Set environment variable to silence deprication warning
 export SQLALCHEMY_SILENCE_UBER_WARNING=1
 
@@ -34,21 +35,19 @@ export SQLALCHEMY_SILENCE_UBER_WARNING=1
 mypy_files=(
     "utils/data.py"
     "utils/setup.py"
-    "utils/item.py"
     "utils/genotype.py"
-    "utils/phenotype.py"
+    "utils/helpers.py"
     "utils/optimizer.py"
     "main.py"
     "plot.py"
 )
 
 python_files=(
+    "utils/data.py"
     "utils/setup.py"
-    "utils/item.py"
     "utils/genotype.py"
-    "utils/phenotype.py"
+    "utils/helpers.py"
     "utils/optimizer.py"
-    # "main.py"
 )
 
 # Run mypy on each file
