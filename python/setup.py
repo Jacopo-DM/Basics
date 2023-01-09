@@ -18,20 +18,18 @@ import sys
 # Local libraries
 try:
     # If running from the root directory
-    from data import ShellColours as Clr
+    from data import ShellColours as Clr  # type: ignore # FIXME
 except ImportError as e:
     try:
         # If running from the utils directory
         from .data import ShellColours as Clr
     except ImportError as e:
-        ylw = "\033[33m"
-        end = "\033[0m"
-        print(f"{ylw}ImportError: data module not found")
+        print(f"\033[33mImportError: data module not found")
         print(
             f"You probably need to update the import line to match your file structure"
         )
         print(f"eg. from utils.data import ShellColours as Clr")
-        print(f"Exiting...{end}\n")
+        print(f"Exiting...\033[0m\n")
         raise e
 
 
@@ -120,6 +118,12 @@ def check_requirements() -> None:
     logging.debug("Checking if requirements.txt exists...")
     if not os.path.exists("requirements.txt"):
         logging.warning(f"requirements.txt {Clr.yellow}not found{Clr.end}")
+        logging.debug("Skipping check for required packages...")
+    elif os.stat("requirements.txt").st_size == 0:
+        logging.warning(f"requirements.txt {Clr.yellow}is empty{Clr.end}")
+        logging.debug("Skipping check for required packages...")
+    elif os.path.getsize("requirements.txt") <= 1:
+        logging.warning(f"requirements.txt {Clr.yellow}is empty{Clr.end}")
         logging.debug("Skipping check for required packages...")
     else:
         # Check that required packages are installed
