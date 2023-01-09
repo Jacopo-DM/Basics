@@ -21,6 +21,11 @@ Files I use as templates or re-use in multiple projects or directories
 
 ## Various Clean Up Commands
 
+### Merge Files Only
+
+```bash
+git checkout branch_name -- folder/file
+```
 
 ### Remove Git Files
 
