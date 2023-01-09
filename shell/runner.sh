@@ -27,6 +27,9 @@ function run_python {
     echo ""
 }
 
+# Set environment variable to silence deprication warning
+export SQLALCHEMY_SILENCE_UBER_WARNING=1
+
 # Create list of files
 mypy_files=(
     "utils/data.py"
