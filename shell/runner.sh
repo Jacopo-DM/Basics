@@ -7,6 +7,10 @@ Date:       2023-01-05
 OS:         macOS 12.6 (Monterey)
 Hardware:   M1 chip
 
+Remeber to:
+- cd path/to/root
+- chmod +x runner.sh
+
 readme
 
 function run_mypy {
@@ -25,16 +29,23 @@ function run_python {
 
 # Create list of files
 mypy_files=(
-    # "utils/base.py"
-    # "utils/data.py"
-    # "utils/setup.py"
-    "base.py"
-    "data.py"
-    "setup.py"
+    "utils/data.py"
+    "utils/setup.py"
+    "utils/item.py"
+    "utils/genotype.py"
+    "utils/phenotype.py"
+    "utils/optimizer.py"
+    "main.py"
+    "plot.py"
 )
 
 python_files=(
-    # None
+    "utils/setup.py"
+    "utils/item.py"
+    "utils/genotype.py"
+    "utils/phenotype.py"
+    "utils/optimizer.py"
+    # "main.py"
 )
 
 # Run mypy on each file

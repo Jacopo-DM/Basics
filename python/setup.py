@@ -18,7 +18,7 @@ import sys
 # Local libraries
 try:
     # If running from the root directory
-    from data import ShellColours as Clr
+    from data import ShellColours as Clr  # type: ignore # FIXME
 except ImportError as e:
     try:
         # If running from the utils directory
