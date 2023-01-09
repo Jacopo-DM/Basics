@@ -21,6 +21,18 @@ Files I use as templates or re-use in multiple projects or directories
 
 ## Various Clean Up Commands
 
+### Merge Files Only
+
+```bash
+git checkout branch_name -- folder/file
+
+# Example
+git checkout branch_name -- python/__init__.py
+git checkout branch_name -- python/base.py
+git checkout branch_name -- python/data.py
+git checkout branch_name -- python/setup.py
+git checkout branch_name -- shell/env.sh
+```
 
 ### Remove Git Files
 
