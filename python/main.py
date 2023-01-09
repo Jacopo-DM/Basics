@@ -32,13 +32,13 @@ async def main() -> None:
     # Parameters for the evolutionary algorithm
     POPULATION_SIZE = 100
     OFFSPRING_SIZE = 100
-    NUM_OF_GENERATIONS = 500
+    NUM_OF_GENERATIONS = 5000
     ITEM_PROBABILITY = 0.5
     MAX_WEIGHT = 300
 
     # Random number generator
     rng = Random()
-    rng.seed(42)
+    rng.seed(28)
 
     # Generate a list of random items
     items = random_items(
@@ -91,8 +91,21 @@ async def main() -> None:
     # Log end optimization
     logging.info("End optimization")
 
-    # Log time
-    logging.info(f"Time: {end - start}")
+    # Log time (format hh h mm min ss sec ms)
+    logging.info(f"Number of generations: {NUM_OF_GENERATIONS}")
+    logging.info(f"Time: {time.strftime('%H h %M m %S s', time.gmtime(end - start))}")
+    # time per generation in centiseconds
+    logging.info(
+        f"Time per generation: {round((end - start) / NUM_OF_GENERATIONS * 100, 3)} cs"
+    )
+    # time per generation in seconds
+    logging.info(
+        f"Time per generation: {round((end - start) / NUM_OF_GENERATIONS, 3)} s"
+    )
+    # time per generation in minutes
+    logging.info(
+        f"Time per generation: {round((end - start) / NUM_OF_GENERATIONS / 60, 3)} min"
+    )
 
 
 if __name__ == "__main__":
