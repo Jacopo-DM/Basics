@@ -1,6 +1,17 @@
 # Shell
 
-## env.sh
+## Directory Structure
+
+```bash
+.
+├── README.md
+├── __init__.py
+├── base.py
+├── data.py
+└── setup.py
+```
+
+## `env.sh`
 
 Extra information showing the steps the author took to setup his (mini)conda environment (on his M1 Mac). 
 Mostly used for repeatability on his end (but also potentially for reproducibility).

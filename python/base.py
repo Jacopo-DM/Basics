@@ -10,7 +10,9 @@ This code is provided "As Is"
 """
 
 # Standard libraries
+
 # Third-party libraries
+
 # Local libraries
 
 
@@ -25,6 +27,7 @@ if __name__ == "__main__":
 Create 'requirements.txt'
     pip install pipreqs
     pipreqs /path/to/project
+
 Use 'requirements.txt'
     pip install -r /path/to/requirements.txt
 """
@@ -33,9 +36,9 @@ Use 'requirements.txt'
 def func(param1: str, param2: int) -> bool:
     Parameters
     ----------    
-    param1
+    param1 : type
         The first parameter.
-    param2
+    param2 : type
         The second parameter.
 
     Returns
