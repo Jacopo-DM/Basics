@@ -53,3 +53,15 @@ find . -name "README.md" -delete
 2. Delete the relevant section from `.git/config`.
 3. Run `git rm --cached path_to_submodule` (no trailing slash).
 4. Commit and delete the now untracked submodule files.
+
+### Remove a Git Branch (Locally)
+
+```bash
+git branch -d branch_name
+```
+
+### Remove a Git Branch (Remotely)
+
+```bash
+git push origin --delete branch_name
+```
