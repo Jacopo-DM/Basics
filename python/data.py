@@ -74,14 +74,16 @@ class ShellColours:
     red: str = "\033[91m"
     yellow: str = "\033[93m"
     gray: str = "\033[90m"
-    cyan: str = "\033[95m"
+    purple: str = "\033[95m"
+    cyan: str = "\033[96m"
 
     # Colours bolded
     green_em: str = "\033[92m\033[1m"
     red_em: str = "\033[91m\033[1m"
     yellow_em: str = "\033[93m\033[1m"
     gray_em: str = "\033[90m\033[1m"
-    cyan_em: str = "\033[95m\033[1m"
+    purple_em: str = "\033[95m\033[1m"
+    cyan_em: str = "\033[96m\033[1m"
 
     # Styles
     em: str = "\033[1m"  # bold
