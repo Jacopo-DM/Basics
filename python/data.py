@@ -73,7 +73,6 @@ class ShellColours:
     green: str = "\033[92m"
     red: str = "\033[91m"
     yellow: str = "\033[93m"
-    end: str = "\033[0m"
     gray: str = "\033[90m"
     cyan: str = "\033[95m"
 
@@ -87,3 +86,6 @@ class ShellColours:
     # Styles
     em: str = "\033[1m"  # bold
     ul: str = "\033[4m"  # underline
+
+    # Functional
+    end: str = "\033[0m"
