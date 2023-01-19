@@ -10,7 +10,19 @@ This code is provided "As Is"
 """
 
 # Standard libraries
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
+
+
+@dataclass
+class Plotting:
+    STYLE: str = "bmh"
+    DPI: int = 500
+    FIG_SIZE: tuple[int, int] = (8, 6)
+    WEIGHT: str = "bold"
+    SIZE: int = 9
+    # font = {"weight": Plotting.WEIGHT, "size": Plotting.SIZE}
+    # plt.rc("font", **font)
 
 
 @dataclass
