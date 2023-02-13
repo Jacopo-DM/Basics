@@ -1,14 +1,16 @@
 # Basics
 
-Files I use as templates or re-use in multiple projects or directories
+Files I use as templates and reuse in multiple projects or directories
 
 ## Directory Structure
 
 ```bash
 .
 ├── README.md           # This file
+├── clean_up.sh          # Applies various clean up commands
 ├── python              # Python helper files & templates
 │   ├── README.md       # Extra information
+│   ├── __init__.py     # Easy import of all python files
 │   ├── base.py         # Template for any python code 
 │   ├── data.py         # Misc common data classes (mostly aesthetic)
 │   └── setup.py        # Automatic environment checking and setup logging

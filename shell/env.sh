@@ -18,9 +18,16 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     exit 1
 fi
 
-# == Set Up The Conda Environment == #
+# == Set Up ARM Conda Environment == #
 CONDA_SUBDIR=osx-arm64 conda create -n ENV_NAME
 conda activate ENV_NAME
 conda env config vars set CONDA_SUBDIR=osx-arm64
+conda deactivate
+conda activate ENV_NAME
+
+# == Set Up x86 Conda Environment == #
+CONDA_SUBDIR=osx-64 conda create -n ENV_NAME
+conda activate ENV_NAME
+conda env config vars set CONDA_SUBDIR=osx-64
 conda deactivate
 conda activate ENV_NAME
