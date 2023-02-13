@@ -35,6 +35,9 @@ if [ $DRY_RUN -eq 1 ]; then
 
     echo "Dry run: would remove .gitignore file"
     echo "rm .gitignore"
+
+    echo "Dry run: would remove this script"
+    echo "rm clean_up.sh"
 fi
 
 # If not dry run, actually do it
@@ -62,5 +65,10 @@ if [ $DRY_RUN -eq 0 ]; then
     # Remove .gitignore file
     echo "Removing .gitignore file"
     rm .gitignore
+
+    # Remove this script
+    echo "Removing this script"
+    rm clean_up.sh
+    
 fi
 
