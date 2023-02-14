@@ -150,7 +150,7 @@ def check_requirements() -> None:
     logging.info(f"{Clr.green}Environment is ready{Clr.end}")
 
 
-def setup() -> None:
+def setup_all() -> None:
     """Check if environment is ready to run code"""
 
     # Setup logging module
@@ -167,4 +167,4 @@ def setup() -> None:
 
 
 if __name__ == "__main__":
-    setup()
+    setup_all()

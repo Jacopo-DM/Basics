@@ -19,6 +19,11 @@ Files I use as templates and reuse in multiple projects or directories
     └── env.sh          # Conda environment setup guide
 ```
 
+## 'python/colors.png'
+
+### Color Palette
+
+![Color Palette](python/colors.png)
 ---
 
 ## Various Clean Up Commands
